@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import {TextField} from "@material-ui/core";
@@ -6,8 +6,7 @@ import config from './config.js'
 
 
 export default function DrawerContent(props) {
-    let generateList = (list, search_phrase) => {
-        console.log(list);
+    let generateList = useCallback((list, search_phrase) => {
         return list.map((l) => {
             let name = l.name
             if (!name.includes(search_phrase)) return "";
@@ -19,7 +18,7 @@ export default function DrawerContent(props) {
                 </ListItem>
             )
         });
-    };
+    },[props]);
     const [dataList, setDataList] = React.useState();
     const [list, setList] = React.useState("");
 
@@ -35,15 +34,14 @@ export default function DrawerContent(props) {
             })
             .then(
                 (result) => {
-                    console.log(result);
                     setDataList(result);
                     setList(generateList(result, ""))
                 },
                 error => {
-                    console.log(error)
+                    console.error(error)
                 }
             )
-    }, []);
+    }, [generateList]);
 
     return (
         <React.Fragment>

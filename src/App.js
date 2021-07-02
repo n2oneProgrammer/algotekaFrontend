@@ -11,9 +11,10 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import MenuIcon from '@material-ui/icons/Menu';
-import {Hidden} from "@material-ui/core";
+import {Hidden, Link} from "@material-ui/core";
 import DrawerContent from "./DrawerContent";
 import CodeContent from "./CodeContent";
+import MainContent from "./MainContent";
 
 const drawerWidth = 240;
 
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
     const classes = useStyles();
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [idOpenAlgorithm, setIdOpenAlgorithm] = React.useState(1);
+    const [idOpenAlgorithm, setIdOpenAlgorithm] = React.useState(0);
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
@@ -121,7 +122,9 @@ function App() {
                         </IconButton>
                     </Hidden>
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                        Algoteka
+                        <Link href="#" onClick={() => setIdOpenAlgorithm(0)} color="inherit">
+                            Algoteka
+                        </Link>
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -160,7 +163,11 @@ function App() {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer}/>
                 <Container maxWidth="xl" className={classes.container}>
-                    <CodeContent idAlgorithm={idOpenAlgorithm}/>
+                    {idOpenAlgorithm === 0 ? (
+                        <MainContent/>
+                    ) : (
+                        <CodeContent idAlgorithm={idOpenAlgorithm}/>
+                    )}
                 </Container>
 
 

@@ -47,7 +47,7 @@ export default function CodeContent(props) {
     const [codes, setCodes] = React.useState({});
 
     const parseLanguages = listCodes => {
-        if(listCodes === undefined){
+        if (listCodes === undefined) {
             return {}
         }
         let resultList = {}
@@ -75,17 +75,16 @@ export default function CodeContent(props) {
                     setCodes(parseLanguages(result['codes']));
                 },
                 error => {
-                    console.log(error)
+                    console.error(error)
                 }
             )
-    }, [])
+    }, [props])
 
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    console.log(codes);
     let i = -1;
     let tabs = Object.keys(codes).map((key, _) => {
         i++;
