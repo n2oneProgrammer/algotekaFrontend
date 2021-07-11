@@ -2,7 +2,7 @@ import React, {useCallback, useEffect} from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import {TextField} from "@material-ui/core";
-import config from './config.js'
+import config from './config.js';
 
 
 export default function DrawerContent(props) {

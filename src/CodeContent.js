@@ -5,7 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import CodeTab from "./CodeTab";
-
+import config from './config.js'
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -66,7 +66,7 @@ export default function CodeContent(props) {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/algorithm/" + props['idAlgorithm'])
+        fetch(config.src + "/algorithm/" + props['idAlgorithm'])
             .then(res => {
                 return res.json()
             })
@@ -97,7 +97,7 @@ export default function CodeContent(props) {
         i++;
         return (
             <TabPanel value={value} key={i} index={i} dir={theme.direction} component="div">
-                <CodeTab codes={codes[key]["codes"]}/>
+                <CodeTab codes={codes[key]}/>
             </TabPanel>
         )
     })
