@@ -6,6 +6,7 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import CodeTab from "./CodeTab";
 import config from './config.js'
+import AddCodeDialog from "./dialogs/AddCodeDialog";
 
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
@@ -45,6 +46,8 @@ export default function CodeContent(props) {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
     const [codes, setCodes] = React.useState({});
+    const [openAddCodeDialog, setOpenAddCodeDialog] = React.useState(false);
+    const [languageIdDialog, setLanguageIdDialog] = React.useState(1);
 
     const parseLanguages = listCodes => {
         if (listCodes === undefined) {
@@ -57,7 +60,8 @@ export default function CodeContent(props) {
             } else {
                 resultList[item['language']['name']] = {
                     "codes": [item["code"]],
-                    "syntax_code": item['language']['syntax_code']
+                    "syntax_code": item['language']['syntax_code'],
+                    "language_id": item['language']['id']
                 }
             }
         });
@@ -97,26 +101,48 @@ export default function CodeContent(props) {
         i++;
         return (
             <TabPanel value={value} key={i} index={i} dir={theme.direction} component="div">
-                <CodeTab codes={codes[key]}/>
+                <CodeTab setOpenAddCodeDialog={setOpenAddCodeDialog} setLanguageIdDialog={setLanguageIdDialog}
+                         codes={codes[key]} accessToken={props['accessToken']}/>
             </TabPanel>
         )
     })
+    let addCode = (code) => {
+        if (code['language']['name'] in codes) {
+            codes[code['language']['name']].push(code['code'])
+        } else {
+            codes[code['language']['name']] = [
+                {
+                    "language_id": code['language']['id'],
+                    "syntax_code": code['language']['syntax_code']
+                }
+            ]
+        }
+    };
     return (
         <React.Fragment>
-            <div>
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="full width tabs example"
-                >
-                    {tabs}
-                </Tabs>
-                {contentTabs}
+            <Tabs
+                value={value}
+                onChange={handleChange}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                aria-label="full width tabs example"
+            >
+                {tabs}
+                {props['accessToken'] != null ? (
 
-            </div>
+                    <Tab label="add" onClick={() => {
+                        setLanguageIdDialog(1);
+                        setOpenAddCodeDialog(true);
+                    }}/>
+                ) : (
+                    ""
+                )}
+            </Tabs>
+            {contentTabs}
+            <AddCodeDialog open={openAddCodeDialog} onClose={() => setOpenAddCodeDialog(false)}
+                           onAdd={addCode} token={props['accessToken']} language_id={languageIdDialog}
+                           algorithm_id={props['idAlgorithm']}/>
         </React.Fragment>
     );
 }

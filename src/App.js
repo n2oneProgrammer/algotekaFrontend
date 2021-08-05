@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import clsx from 'clsx';
 import {makeStyles} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,10 +11,11 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import MenuIcon from '@material-ui/icons/Menu';
-import {Hidden, Link} from "@material-ui/core";
+import {Hidden, Icon, Link} from "@material-ui/core";
 import DrawerContent from "./DrawerContent";
 import CodeContent from "./CodeContent";
 import MainContent from "./MainContent";
+import LoginDialog from "./dialogs/LoginDialog";
 
 const drawerWidth = 240;
 
@@ -99,11 +100,24 @@ function App() {
     const classes = useStyles();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [idOpenAlgorithm, setIdOpenAlgorithm] = React.useState(0);
+    const [openLoginDialog, setOpenLoginDialog] = React.useState(false);
+    const [accessToken, setAccessToken] = React.useState(null)
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
     const container = window !== undefined ? () => window.document.body : undefined;
-
+    const login = (access_token) => {
+        localStorage.setItem("token", access_token)
+        setAccessToken(access_token)
+    }
+    const logout = () => {
+        localStorage.removeItem("token")
+        setAccessToken(null)
+    }
+    useEffect(() => {
+        let access_token = localStorage.getItem("token");
+        setAccessToken(access_token)
+    }, []);
 
     return (
         <div className={classes.root}>
@@ -126,6 +140,26 @@ function App() {
                             Algoteka
                         </Link>
                     </Typography>
+                    {accessToken != null ? (
+                        <IconButton
+                            color="inherit"
+                            aria-label="login"
+                            edge="end"
+                            onClick={() => logout()}
+                        >
+                            <Icon>logout</Icon>
+                        </IconButton>
+                    ) : (
+                        <IconButton
+                            color="inherit"
+                            aria-label="login"
+                            edge="end"
+                            onClick={() => setOpenLoginDialog(true)}
+                        >
+                            <Icon>person</Icon>
+                        </IconButton>
+                    )}
+
                 </Toolbar>
             </AppBar>
             <nav>
@@ -144,7 +178,7 @@ function App() {
                         }}
                     >
                         <Divider/>
-                        <List><DrawerContent changePage={setIdOpenAlgorithm}/></List>
+                        <List><DrawerContent changePage={setIdOpenAlgorithm} accessToken={accessToken}/></List>
                     </Drawer>
                 </Hidden>
                 <Hidden xsDown implementation="css">
@@ -156,7 +190,7 @@ function App() {
                         open
                     >
                         <Divider/>
-                        <List><DrawerContent changePage={setIdOpenAlgorithm}/></List>
+                        <List><DrawerContent changePage={setIdOpenAlgorithm} accessToken={accessToken}/></List>
                     </Drawer>
                 </Hidden>
             </nav>
@@ -166,12 +200,13 @@ function App() {
                     {idOpenAlgorithm === 0 ? (
                         <MainContent/>
                     ) : (
-                        <CodeContent idAlgorithm={idOpenAlgorithm}/>
+                        <CodeContent idAlgorithm={idOpenAlgorithm} accessToken={accessToken}/>
                     )}
                 </Container>
 
 
             </main>
+            <LoginDialog open={openLoginDialog} onClose={() => setOpenLoginDialog(false)} onLogin={login}/>
         </div>
     );
 }
