@@ -11,12 +11,14 @@ import {
 } from "@material-ui/core";
 import config from "../config";
 import Typography from "@material-ui/core/Typography";
+import AddLanguageDialog from "./AddLanguageDialog";
 export default function AddCodeDialog(props) {
     const [errorMessage, setErrorMessage] = React.useState("")
     const {onClose, open, onAdd, token, language_id, algorithm_id} = props;
     const [codeInput, setCodeInput] = React.useState("");
     const [languageInput, setLanguageInput] = React.useState(0);
     const [languageList, setLanguageList] = React.useState([])
+    const [openAddLanguageDialog, setOpenAddLanguageDialog] = React.useState(false)
     const handleAddCode = () => {
         let myHeaders = new Headers();
         myHeaders.append("Accept", "application/json");
@@ -65,7 +67,15 @@ export default function AddCodeDialog(props) {
                 }
             )
     }, [language_id]);
-
+    let addLanguage = (language) => {
+        let tempList = languageList;
+        tempList.push(
+            (
+                <MenuItem key={language['id']} value={language['id']}>{language['name']}</MenuItem>
+            )
+        )
+        setLanguageList(tempList)
+    };
     return (
         <Dialog
             fullWidth={true}
@@ -101,9 +111,16 @@ export default function AddCodeDialog(props) {
                         name: 'max-width',
                         id: 'max-width',
                     }}
-                    onChange={(e) => setLanguageInput(e.target.value)}
+                    onChange={(e) => {
+                        if(e.target.value === "add"){
+                            setOpenAddLanguageDialog(true)
+                            return;
+                        }
+                        setLanguageInput(e.target.value)
+                    }}
                 >
                     {languageList}
+                    <MenuItem key={"add"} value={"add"}>ADD</MenuItem>
                 </Select>
             </DialogContent>
             <DialogActions>
@@ -114,6 +131,9 @@ export default function AddCodeDialog(props) {
                     Login
                 </Button>
             </DialogActions>
+            <AddLanguageDialog open={openAddLanguageDialog} onClose={() => setOpenAddLanguageDialog(false)}
+                               onAdd={addLanguage} token={props['token']}/>
         </Dialog>
+
     )
 }
